@@ -131,7 +131,7 @@ int run_command(int argc, char** argv, View default_view,
     }
 
     if (argc > 5) {
-      LibXR::STDIO::Printf("Error: Too many arguments for monitor.\r\n");
+      LibXR::STDIO::Printf<"Error: Too many arguments for monitor.\r\n">();
       return -1;
     }
 
@@ -152,19 +152,18 @@ int run_command(int argc, char** argv, View default_view,
 
     if (argc == 5) {
       if (third_is_view) {
-        LibXR::STDIO::Printf(
-            "Error: Invalid monitor args. Use monitor <time_ms> [interval_ms] "
-            "[view].\r\n");
+        LibXR::STDIO::Printf<"Error: Invalid monitor args. Use monitor <time_ms> [interval_ms] "
+            "[view].\r\n">();
         return -1;
       }
       if (!parse_view(argv[4], &view)) {
-        LibXR::STDIO::Printf("Error: Unknown view '%s'.\r\n", argv[4]);
+        LibXR::STDIO::Printf<"Error: Unknown view '%s'.\r\n">(argv[4]);
         return -1;
       }
     }
 
     if (time_ms <= 0 || interval_ms <= 0) {
-      LibXR::STDIO::Printf("Error: time_ms and interval_ms must be > 0.\r\n");
+      LibXR::STDIO::Printf<"Error: time_ms and interval_ms must be > 0.\r\n">();
       return -1;
     }
 
@@ -179,13 +178,13 @@ int run_command(int argc, char** argv, View default_view,
 
   if (std::strcmp(argv[1], "once") == 0) {
     if (argc > 3) {
-      LibXR::STDIO::Printf("Error: Too many arguments for once.\r\n");
+      LibXR::STDIO::Printf<"Error: Too many arguments for once.\r\n">();
       return -1;
     }
 
     View view = default_view;
     if (argc == 3 && !parse_view(argv[2], &view)) {
-      LibXR::STDIO::Printf("Error: Unknown view '%s'.\r\n", argv[2]);
+      LibXR::STDIO::Printf<"Error: Unknown view '%s'.\r\n">(argv[2]);
       return -1;
     }
 
@@ -199,7 +198,7 @@ int run_command(int argc, char** argv, View default_view,
     return 0;
   }
 
-  LibXR::STDIO::Printf("Error: Unknown command '%s'.\r\n", argv[1]);
+  LibXR::STDIO::Printf<"Error: Unknown command '%s'.\r\n">(argv[1]);
   return -1;
 }
 
@@ -242,7 +241,7 @@ struct StructuredProvider {
  */
 inline void print_bool_field(const char* name, const void* field_ptr) {
   bool value = *reinterpret_cast<const bool*>(field_ptr);
-  LibXR::STDIO::Printf("  %s=%s\r\n", name, value ? "true" : "false");
+  LibXR::STDIO::Printf<"  %s=%s\r\n">(name, value ? "true" : "false");
 }
 
 /**
@@ -250,7 +249,7 @@ inline void print_bool_field(const char* name, const void* field_ptr) {
  */
 inline void print_u8_field(const char* name, const void* field_ptr) {
   uint8_t value = *reinterpret_cast<const uint8_t*>(field_ptr);
-  LibXR::STDIO::Printf("  %s=%u\r\n", name, static_cast<unsigned>(value));
+  LibXR::STDIO::Printf<"  %s=%u\r\n">(name, static_cast<unsigned>(value));
 }
 
 /**
@@ -258,28 +257,28 @@ inline void print_u8_field(const char* name, const void* field_ptr) {
  */
 inline void print_f32_field(const char* name, const void* field_ptr) {
   float value = *reinterpret_cast<const float*>(field_ptr);
-  LibXR::STDIO::Printf("  %s=%.4f\r\n", name, value);
+  LibXR::STDIO::Printf<"  %s=%.4f\r\n">(name, value);
 }
 
 /**
  * @brief 打印布尔值
  */
 inline void print_bool_value(const char* name, bool value) {
-  LibXR::STDIO::Printf("  %s=%s\r\n", name, value ? "true" : "false");
+  LibXR::STDIO::Printf<"  %s=%s\r\n">(name, value ? "true" : "false");
 }
 
 /**
  * @brief 打印 uint8 值
  */
 inline void print_u8_value(const char* name, uint8_t value) {
-  LibXR::STDIO::Printf("  %s=%u\r\n", name, static_cast<unsigned>(value));
+  LibXR::STDIO::Printf<"  %s=%u\r\n">(name, static_cast<unsigned>(value));
 }
 
 /**
  * @brief 打印 float 值
  */
 inline void print_f32_value(const char* name, float value) {
-  LibXR::STDIO::Printf("  %s=%.4f\r\n", name, value);
+  LibXR::STDIO::Printf<"  %s=%.4f\r\n">(name, value);
 }
 
 /**
@@ -309,12 +308,12 @@ int run_live_command(
   };
 
   auto print_usage = [&]() {
-    LibXR::STDIO::Printf("Usage:\r\n");
-    LibXR::STDIO::Printf("  monitor\r\n");
-    LibXR::STDIO::Printf("  monitor <time_ms> [interval_ms] [%s]\r\n",
+    LibXR::STDIO::Printf<"Usage:\r\n">();
+    LibXR::STDIO::Printf<"  monitor\r\n">();
+    LibXR::STDIO::Printf<"  monitor <time_ms> [interval_ms] [%s]\r\n">(
                          view_help);
-    LibXR::STDIO::Printf("  once [%s]\r\n", view_help);
-    LibXR::STDIO::Printf("  %s\r\n", view_help);
+    LibXR::STDIO::Printf<"  once [%s]\r\n">(view_help);
+    LibXR::STDIO::Printf<"  %s\r\n">(view_help);
   };
 
   auto print_once = [&](uint8_t view) {
@@ -322,8 +321,9 @@ int run_live_command(
       lock_self(self);
     }
 
-    LibXR::STDIO::Printf("[%lu ms] %s %s\r\n", LibXR::Thread::GetTime(),
-                         module_name, view_name(view, view_table));
+    LibXR::STDIO::Printf<"[%u ms] %s %s\r\n">(
+        static_cast<unsigned>(LibXR::Thread::GetTime()), module_name,
+        view_name(view, view_table));
 
     bool is_full_view = (view == default_view);
     uint32_t selected_mask = view_bit(view);
@@ -353,12 +353,12 @@ int run_structured_command(void* self,
                            const StructuredProvider<Snapshot>& provider,
                            int argc, char** argv, uint8_t default_view) {
   auto print_usage = [&]() {
-    LibXR::STDIO::Printf("Usage:\r\n");
-    LibXR::STDIO::Printf("  monitor\r\n");
-    LibXR::STDIO::Printf("  monitor <time_ms> [interval_ms] [%s]\r\n",
+    LibXR::STDIO::Printf<"Usage:\r\n">();
+    LibXR::STDIO::Printf<"  monitor\r\n">();
+    LibXR::STDIO::Printf<"  monitor <time_ms> [interval_ms] [%s]\r\n">(
                          provider.view_help);
-    LibXR::STDIO::Printf("  once [%s]\r\n", provider.view_help);
-    LibXR::STDIO::Printf("  %s\r\n", provider.view_help);
+    LibXR::STDIO::Printf<"  once [%s]\r\n">(provider.view_help);
+    LibXR::STDIO::Printf<"  %s\r\n">(provider.view_help);
   };
 
   auto print_once = [&](uint8_t view) {
@@ -367,8 +367,9 @@ int run_structured_command(void* self,
 
     auto current_view_name =
         provider.view_to_string ? provider.view_to_string(view) : "unknown";
-    LibXR::STDIO::Printf("[%lu ms] %s %s\r\n", LibXR::Thread::GetTime(),
-                         provider.module_name, current_view_name);
+    LibXR::STDIO::Printf<"[%u ms] %s %s\r\n">(
+        static_cast<unsigned>(LibXR::Thread::GetTime()), provider.module_name,
+        current_view_name);
 
     bool is_full_view = (view == default_view);
     uint32_t selected_mask = view_bit(view);
