@@ -463,7 +463,8 @@ class DebugCore
   /**
    * @brief 构造 DebugCore 模块
    */
-  DebugCore() {}
+  DebugCore(
+      ) {}
 
   /**
    * @brief 监控回调
