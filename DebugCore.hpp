@@ -465,9 +465,4 @@ class DebugCore
    */
   DebugCore(
       ) {}
-
-  /**
-   * @brief 监控回调
-   */
-  void OnMonitor() {}
 };
