@@ -179,7 +179,7 @@ An instance written by `xrobot instance add QDU-Robomaster/DebugCore`:
 ```yaml
 modules:
   - module: QDU-Robomaster/DebugCore
-    id: debugcore
+    id: debugcore_0
 ```
 
 ## 7. 依赖与硬件 / Dependencies and Hardware
