@@ -21,24 +21,36 @@ namespace debug_core
 {
 
 /**
- * @brief 视图名称与视图值映射项
- * @tparam View 视图值类型
+ * @brief 视图名称与视图值的映射项。
+ *        Mapping entry between a view name and a view value.
+ *
+ * @tparam View 视图值类型。
+ *              View value type.
  */
 template <typename View>
 struct ViewEntry
 {
-  const char* name;
-  View view;
+  const char* name;  ///< 视图名称 View name
+  View view;         ///< 视图值 View value
 };
 
 /**
- * @brief 按视图表解析视图名
- * @tparam View 视图值类型
- * @tparam N 视图表大小
- * @param arg 视图字符串
- * @param table 视图映射表
- * @param out 输出视图值
- * @return bool 解析成功返回 true
+ * @brief 按视图表解析视图名。
+ *        Parse a view name with a view table.
+ *
+ * @tparam View 视图值类型。
+ *              View value type.
+ * @tparam N 视图表大小。
+ *           View table size.
+ * @param arg 视图字符串。
+ *            View string.
+ * @param table 视图映射表。
+ *              View mapping table.
+ * @param out 输出视图值。
+ *            Output view value.
+ * @return 解析成功为 true；`arg` 或 `out` 为空、名称不在表中时为 false。
+ *         True on success; false when `arg` or `out` is null or the name is not in the
+ *         table.
  */
 template <typename View, size_t N>
 bool parse_view_table(const char* arg, const std::array<ViewEntry<View>, N>& table,
@@ -60,12 +72,19 @@ bool parse_view_table(const char* arg, const std::array<ViewEntry<View>, N>& tab
 }
 
 /**
- * @brief 解析 uint8_t 视图名
- * @tparam N 视图表大小
- * @param arg 视图字符串
- * @param table 视图映射表
- * @param out 输出视图值
- * @return bool 解析成功返回 true
+ * @brief 解析 `uint8_t` 视图名。
+ *        Parse a `uint8_t` view name.
+ *
+ * @tparam N 视图表大小。
+ *           View table size.
+ * @param arg 视图字符串。
+ *            View string.
+ * @param table 视图映射表。
+ *              View mapping table.
+ * @param out 输出视图值。
+ *            Output view value.
+ * @return 解析成功为 true。
+ *         True on success.
  */
 template <size_t N>
 bool parse_view_name(const char* arg, const std::array<ViewEntry<uint8_t>, N>& table,
@@ -75,12 +94,19 @@ bool parse_view_name(const char* arg, const std::array<ViewEntry<uint8_t>, N>& t
 }
 
 /**
- * @brief 根据视图值获取视图名
- * @tparam N 视图表大小
- * @param view 视图值
- * @param table 视图映射表
- * @param fallback 未找到时返回值
- * @return const char* 视图名字符串
+ * @brief 根据视图值获取视图名。
+ *        Get the view name of a view value.
+ *
+ * @tparam N 视图表大小。
+ *           View table size.
+ * @param view 视图值。
+ *             View value.
+ * @param table 视图映射表。
+ *              View mapping table.
+ * @param fallback 未找到时返回的字符串。
+ *                 String returned when the view is not found.
+ * @return 视图名字符串。
+ *         View name string.
  */
 template <size_t N>
 const char* view_name(uint8_t view, const std::array<ViewEntry<uint8_t>, N>& table,
@@ -97,13 +123,22 @@ const char* view_name(uint8_t view, const std::array<ViewEntry<uint8_t>, N>& tab
 }
 
 /**
- * @brief 成员函数命令桥接
- * @tparam Owner 模块类型
- * @tparam MemberFunc 成员命令函数
- * @param self 模块实例
- * @param argc 参数数量
- * @param argv 参数数组
- * @return int 命令返回值
+ * @brief 把成员命令函数转换为 RamFS 命令文件使用的函数。
+ *        Convert a member command function into the function used by a RamFS command
+ *        file.
+ *
+ * @tparam Owner 模块类型。
+ *               Module type.
+ * @tparam MemberFunc 成员命令函数。
+ *                    Member command function.
+ * @param self 模块实例。
+ *             Module instance.
+ * @param argc 参数数量。
+ *             Argument count.
+ * @param argv 参数数组。
+ *             Argument array.
+ * @return 命令返回值。
+ *         Command return value.
  */
 template <typename Owner, int (Owner::*MemberFunc)(int, char**)>
 int command_thunk(Owner* self, int argc, char** argv)
@@ -112,12 +147,31 @@ int command_thunk(Owner* self, int argc, char** argv)
 }
 
 /**
- * @brief 通用命令解析执行器
- * @tparam View 视图类型
- * @tparam ParseViewFn 视图解析回调类型
- * @tparam PrintOnceFn 单次打印回调类型
- * @tparam PrintUsageFn 帮助打印回调类型
- * @return int 命令返回值
+ * @brief 解析并执行 `once` / `monitor` 命令。
+ *        Parse and execute the `once` / `monitor` commands.
+ *
+ * @tparam View 视图类型。
+ *              View type.
+ * @tparam ParseViewFn 视图解析回调类型。
+ *                     View parse callback type.
+ * @tparam PrintOnceFn 单次打印回调类型。
+ *                     Single-print callback type.
+ * @tparam PrintUsageFn 帮助打印回调类型。
+ *                      Help-print callback type.
+ * @param argc 参数数量。
+ *             Argument count.
+ * @param argv 参数数组。
+ *             Argument array.
+ * @param default_view 默认视图。
+ *                     Default view.
+ * @param parse_view 视图解析回调。
+ *                   View parse callback.
+ * @param print_once 单次打印回调。
+ *                   Single-print callback.
+ * @param print_usage 帮助打印回调。
+ *                    Help-print callback.
+ * @return 成功为 0，参数错误为 -1。
+ *         0 on success, -1 on an argument error.
  */
 template <typename View, typename ParseViewFn, typename PrintOnceFn,
           typename PrintUsageFn>
@@ -228,41 +282,55 @@ int run_command(int argc, char** argv, View default_view, ParseViewFn parse_view
 using ViewMask = uint32_t;
 
 /**
- * @brief 根据视图编号生成掩码位
- * @param view 视图编号
- * @return ViewMask 视图掩码
+ * @brief 根据视图编号生成掩码位。
+ *        Generate the mask bit of a view number.
+ *
+ * @param view 视图编号。
+ *             View number.
+ * @return 视图掩码。
+ *         View mask.
  */
 constexpr ViewMask view_bit(uint8_t view) { return 1u << view; }
 
 /**
- * @brief Structured 模式字段描述
+ * @brief Structured 模式字段描述。
+ *        Field descriptor of the Structured mode.
  */
 struct FieldDesc
 {
-  const char* name;
-  size_t offset;
-  ViewMask view_mask;
-  void (*print)(const char* name, const void* field_ptr);
+  const char* name;    ///< 字段名 Field name
+  size_t offset;       ///< 字段在快照中的偏移 Offset of the field in the snapshot
+  ViewMask view_mask;  ///< 包含该字段的视图掩码 Mask of the views that contain the field
+  void (*print)(const char* name, const void* field_ptr);  ///< 打印函数 Print function
 };
 
 /**
- * @brief Structured 模式提供器
- * @tparam Snapshot 快照类型
+ * @brief Structured 模式提供器。
+ *        Provider of the Structured mode.
+ *
+ * @tparam Snapshot 快照类型。
+ *                  Snapshot type.
  */
 template <typename Snapshot>
 struct StructuredProvider
 {
-  const char* module_name;
-  const char* view_help;
-  bool (*parse_view)(const char* arg, uint8_t* out_view);
-  const char* (*view_to_string)(uint8_t view);
-  void (*capture)(void* self, Snapshot* out_snapshot);
-  const FieldDesc* fields;
-  size_t field_count;
+  const char* module_name;  ///< 打印的模块名 Module name printed
+  const char* view_help;    ///< 帮助中的视图列表 View list shown in the help
+  bool (*parse_view)(const char* arg, uint8_t* out_view);  ///< 视图名解析 View parser
+  const char* (*view_to_string)(uint8_t view);  ///< 视图值转名称 View value to name
+  void (*capture)(void* self, Snapshot* out_snapshot);  ///< 抓取快照 Capture a snapshot
+  const FieldDesc* fields;                              ///< 字段表 Field table
+  size_t field_count;                                   ///< 字段数量 Number of fields
 };
 
 /**
- * @brief 打印布尔字段值
+ * @brief 按偏移指针打印布尔字段。
+ *        Print a boolean field from a field pointer.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param field_ptr 指向字段值的指针。
+ *                  Pointer to the field value.
  */
 inline void print_bool_field(const char* name, const void* field_ptr)
 {
@@ -271,7 +339,13 @@ inline void print_bool_field(const char* name, const void* field_ptr)
 }
 
 /**
- * @brief 打印 uint8 字段值
+ * @brief 按偏移指针打印 uint8 字段。
+ *        Print a uint8 field from a field pointer.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param field_ptr 指向字段值的指针。
+ *                  Pointer to the field value.
  */
 inline void print_u8_field(const char* name, const void* field_ptr)
 {
@@ -280,7 +354,13 @@ inline void print_u8_field(const char* name, const void* field_ptr)
 }
 
 /**
- * @brief 打印 float 字段值
+ * @brief 按偏移指针打印 float 字段，保留 4 位小数。
+ *        Print a float field from a field pointer with 4 decimal places.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param field_ptr 指向字段值的指针。
+ *                  Pointer to the field value.
  */
 inline void print_f32_field(const char* name, const void* field_ptr)
 {
@@ -289,7 +369,13 @@ inline void print_f32_field(const char* name, const void* field_ptr)
 }
 
 /**
- * @brief 打印布尔值
+ * @brief 打印布尔值。
+ *        Print a boolean value.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param value 字段值。
+ *              Field value.
  */
 inline void print_bool_value(const char* name, bool value)
 {
@@ -297,7 +383,13 @@ inline void print_bool_value(const char* name, bool value)
 }
 
 /**
- * @brief 打印 uint8 值
+ * @brief 打印 uint8 值。
+ *        Print a uint8 value.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param value 字段值。
+ *              Field value.
  */
 inline void print_u8_value(const char* name, uint8_t value)
 {
@@ -305,7 +397,13 @@ inline void print_u8_value(const char* name, uint8_t value)
 }
 
 /**
- * @brief 打印 float 值
+ * @brief 打印 float 值，保留 4 位小数。
+ *        Print a float value with 4 decimal places.
+ *
+ * @param name 字段名。
+ *             Field name.
+ * @param value 字段值。
+ *              Field value.
  */
 inline void print_f32_value(const char* name, float value)
 {
@@ -313,20 +411,53 @@ inline void print_f32_value(const char* name, float value)
 }
 
 /**
- * @brief Live 模式字段描述
+ * @brief Live 模式字段描述。
+ *        Field descriptor of the Live mode.
+ *
+ * @tparam Owner 模块类型。
+ *               Module type.
  */
 template <typename Owner>
 struct LiveFieldDesc
 {
-  const char* name;
-  ViewMask view_mask;
-  void (*print)(const char* name, const Owner* self);
+  const char* name;    ///< 字段名 Field name
+  ViewMask view_mask;  ///< 包含该字段的视图掩码 Mask of the views that contain the field
+  void (*print)(const char* name, const Owner* self);  ///< 打印函数 Print function
 };
 
 /**
- * @brief Live 模式命令执行器
- * @tparam Owner 模块类型
- * @tparam ViewCount 视图数量
+ * @brief 执行 Live 模式命令，按当前对象实时读取字段。
+ *        Execute a Live mode command, reading the fields from the current object in real
+ *        time.
+ *
+ * @tparam Owner 模块类型。
+ *               Module type.
+ * @tparam ViewCount 视图数量。
+ *                   Number of views.
+ * @param self 模块实例。
+ *             Module instance.
+ * @param module_name 打印的模块名。
+ *                    Module name printed.
+ * @param view_help 帮助中的视图列表。
+ *                  View list shown in the help.
+ * @param view_table 视图映射表。
+ *                   View mapping table.
+ * @param fields 字段表。
+ *               Field table.
+ * @param field_count 字段数量。
+ *                    Number of fields.
+ * @param argc 参数数量。
+ *             Argument count.
+ * @param argv 参数数组。
+ *             Argument array.
+ * @param default_view 默认视图，选中时打印全部字段。
+ *                     Default view; selecting it prints all fields.
+ * @param lock_self 每次打印前调用的加锁回调，可为空。
+ *                  Lock callback called before each print; may be null.
+ * @param unlock_self 每次打印后调用的解锁回调，可为空。
+ *                    Unlock callback called after each print; may be null.
+ * @return 成功为 0，参数错误为 -1。
+ *         0 on success, -1 on an argument error.
  */
 template <typename Owner, size_t ViewCount>
 int run_live_command(Owner* self, const char* module_name, const char* view_help,
@@ -381,8 +512,24 @@ int run_live_command(Owner* self, const char* module_name, const char* view_help
 }
 
 /**
- * @brief Structured 模式命令执行器
- * @tparam Snapshot 快照类型
+ * @brief 执行 Structured 模式命令，先抓取快照再按字段偏移打印。
+ *        Execute a Structured mode command, capturing a snapshot and then printing by
+ *        field offset.
+ *
+ * @tparam Snapshot 快照类型。
+ *                  Snapshot type.
+ * @param self 传给 `capture` 的模块实例。
+ *             Module instance passed to `capture`.
+ * @param provider 提供器。
+ *                 Provider.
+ * @param argc 参数数量。
+ *             Argument count.
+ * @param argv 参数数组。
+ *             Argument array.
+ * @param default_view 默认视图，选中时打印全部字段。
+ *                     Default view; selecting it prints all fields.
+ * @return 成功为 0，参数错误为 -1。
+ *         0 on success, -1 on an argument error.
  */
 template <typename Snapshot>
 int run_structured_command(void* self, const StructuredProvider<Snapshot>& provider,
@@ -454,15 +601,16 @@ int run_structured_command(void* self, const StructuredProvider<Snapshot>& provi
 #define DEBUG_CORE_LIVE_CUSTOM(OwnerType, name, mask, printer) {(name), (mask), (printer)}
 
 /**
- * @brief DebugCore 占位应用模块
- * @details 该类本身不承载业务逻辑，主要用于满足模块化加载需求。
+ * @brief 终端调试命令工具库的 Module 类，构造后不创建线程、Topic 或命令。
+ *        Module class of the terminal debug command utilities; construction creates no
+ *        thread, Topic or command.
  */
 class DebugCore
 {
  public:
   /**
-   * @brief 构造 DebugCore 模块
+   * @brief 构造 DebugCore。
+   *        Construct DebugCore.
    */
-  DebugCore(
-      ) {}
+  DebugCore() {}
 };
