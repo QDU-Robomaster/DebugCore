@@ -4,11 +4,11 @@
 
 ## 1. 模块作用 / Purpose
 
-DebugCore 的全部功能位于 `DebugCore.hpp` 的 `debug_core` 命名空间和 `DEBUG_CORE_*` 宏中，只有头文件。其他模块在自己的 manifest `depends` 中声明 `QDU-Robomaster/DebugCore` 并包含 `DebugCore.hpp`，例如 `QDU-Robomaster/Launcher` 用它实现 `launcher` 调试命令。同名的 `DebugCore` 类是空类。
+DebugCore 是库型模块（`standalone: false`），全部功能位于 `DebugCore.hpp` 的 `debug_core` 命名空间和 `DEBUG_CORE_*` 宏中，只有头文件。其他模块在自己的 manifest `depends` 中声明 `QDU-Robomaster/DebugCore` 并包含 `DebugCore.hpp`，例如 `QDU-Robomaster/Launcher` 用它实现 `launcher` 调试命令。同名的 `DebugCore` 类是空类。
 
 `debug_core` 把 `once` / `monitor` 命令解析、参数检查和多视图（`state|cmd|pid|...`）字段打印流程集中在一处，使用它的模块只需提供视图表和字段表。
 
-DebugCore provides all of its functionality in the `debug_core` namespace and the `DEBUG_CORE_*` macros of `DebugCore.hpp`, as a header-only library. Other Modules declare `QDU-Robomaster/DebugCore` in the `depends` of their manifest and include `DebugCore.hpp`; for example `QDU-Robomaster/Launcher` uses it to implement the `launcher` debug command. The `DebugCore` class of the same name is empty.
+DebugCore is a library Module (`standalone: false`). All of its functionality is in the `debug_core` namespace and the `DEBUG_CORE_*` macros of `DebugCore.hpp`, and it consists of the header only. Other Modules declare `QDU-Robomaster/DebugCore` in the `depends` of their manifest and include `DebugCore.hpp`; for example `QDU-Robomaster/Launcher` uses it to implement the `launcher` debug command. The `DebugCore` class of the same name is empty.
 
 `debug_core` gathers the `once` / `monitor` command parsing, argument checking and multi-view (`state|cmd|pid|...`) field printing in one place, so that a Module using it only supplies a view table and a field table.
 
@@ -172,15 +172,18 @@ No dependencies and no configuration parameters.
 
 ## 6. 配置示例 / Configuration Example
 
-`xrobot instance add QDU-Robomaster/DebugCore` 写入的实例：
+DebugCore 是库，`xrobot instance add` 输出：
 
-An instance written by `xrobot instance add QDU-Robomaster/DebugCore`:
+DebugCore is a library, and `xrobot instance add` prints:
 
-```yaml
-modules:
-  - module: QDU-Robomaster/DebugCore
-    id: debugcore_0
+```text
+$ xrobot instance add QDU-Robomaster/DebugCore
+QDU-Robomaster/DebugCore is a library (standalone: false) and cannot be instantiated
 ```
+
+在 `User/xrobot.yaml` 中配置的是使用 DebugCore 的模块（例如 `QDU-Robomaster/Launcher`）的实例；这些模块按第 3 节的方式在构造时创建并注册自己的 RamFS 命令文件。
+
+The instances configured in `User/xrobot.yaml` are those of the Modules that use DebugCore (for example `QDU-Robomaster/Launcher`); these Modules create and register their own RamFS command files on construction as described in section 3.
 
 ## 7. 依赖与硬件 / Dependencies and Hardware
 
