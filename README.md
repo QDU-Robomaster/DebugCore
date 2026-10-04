@@ -1,6 +1,6 @@
 # DebugCore
 
-终端调试命令工具库：为 Module 的 RamFS 命令文件提供 `once` / `monitor` 命令解析与字段打印 / Terminal debug command utilities that provide `once` / `monitor` command parsing and field printing for Module RamFS command files
+终端调试命令工具库：为 Module 的 RamFS 命令文件提供 once / monitor 命令解析与字段打印 / Terminal debug command utilities that provide once / monitor command parsing and field printing for Module RamFS command files
 
 ## 1. 模块作用 / Purpose
 
